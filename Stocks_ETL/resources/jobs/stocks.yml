@@ -1,0 +1,22 @@
+resources:
+  jobs:
+    Stocks_Job:
+      name: Stocks_Job
+      tasks:
+        - task_key: Stocks_bronze
+          pipeline_task:
+            pipeline_id: b04e2261-f03e-4b9c-af6a-5ba6938ace32
+            full_refresh: true
+        - task_key: Stocks_Silver
+          depends_on:
+            - task_key: Stocks_bronze
+          pipeline_task:
+            pipeline_id: a2f8b259-e5df-4c42-b790-e52b310c569e
+        - task_key: Stocks_Gold
+          depends_on:
+            - task_key: Stocks_Silver
+          pipeline_task:
+            pipeline_id: 14925d5e-44a7-4852-aa0b-43599b7a1c99
+      queue:
+        enabled: true
+      performance_target: PERFORMANCE_OPTIMIZED
