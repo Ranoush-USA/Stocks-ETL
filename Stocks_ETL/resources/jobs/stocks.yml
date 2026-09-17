@@ -1,22 +1,45 @@
 resources:
   jobs:
-    Stocks_Job:
-      name: Stocks_Job
+    Stocks:
+      name: Stocks
       tasks:
-        - task_key: Stocks_bronze
-          pipeline_task:
-            pipeline_id: b04e2261-f03e-4b9c-af6a-5ba6938ace32
-            full_refresh: true
-        - task_key: Stocks_Silver
-          depends_on:
-            - task_key: Stocks_bronze
-          pipeline_task:
-            pipeline_id: a2f8b259-e5df-4c42-b790-e52b310c569e
-        - task_key: Stocks_Gold
-          depends_on:
-            - task_key: Stocks_Silver
-          pipeline_task:
-            pipeline_id: 14925d5e-44a7-4852-aa0b-43599b7a1c99
-      queue:
-        enabled: true
-      performance_target: PERFORMANCE_OPTIMIZED
+        - task_key: Load_Data
+          notebook_task:
+            notebook_path: ../notebooks/Data_load.ipynb
+            source: WORKSPACE
+  pipelines:
+    stocks_bronze_pipeline:
+      name: Stocks_Bronze
+      catalog: ${var.catalog}
+      target: ${var.bronze_schema}
+      serverless: true
+      configuration:
+        catalog: ${var.catalog}
+        bronze_schema: ${var.bronze_schema}
+      libraries:
+        - notebook:
+            path: ../notebooks/Stocks_Bronze.ipynb
+
+    stocks_silver_pipeline:
+      name: Stocks_Silver
+      catalog: ${var.catalog}
+      target: ${var.silver_schema}
+      serverless: true
+      configuration:
+        catalog: ${var.catalog}
+        silver_schema: ${var.silver_schema}
+      libraries:
+        - notebook:
+            path: ../notebooks/Stocks_silver.ipynb
+
+    stocks_gold_pipeline:
+      name: Stocks_Gold
+      catalog: ${var.catalog}
+      target: ${var.gold_schema}
+      serverless: true
+      configuration:
+        catalog: ${var.catalog}
+        gold_schema: ${var.gold_schema}
+      libraries:
+        - notebook:
+            path: ../notebooks/Stocks_Gold.ipynb
