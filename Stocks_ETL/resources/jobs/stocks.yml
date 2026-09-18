@@ -7,6 +7,25 @@ resources:
           notebook_task:
             notebook_path: ../notebooks/Data_load.ipynb
             source: WORKSPACE
+
+        - task_key: Stocks_Bronze
+          depends_on:
+            - task_key: Load_Data
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.stocks_bronze_pipeline.id}
+
+        - task_key: Stocks_Silver
+          depends_on:
+            - task_key: Stocks_Bronze
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.stocks_silver_pipeline.id}
+
+        - task_key: Stocks_Gold
+          depends_on:
+            - task_key: Stocks_Silver
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.stocks_gold_pipeline.id}
+
   pipelines:
     stocks_bronze_pipeline:
       name: Stocks_Bronze
